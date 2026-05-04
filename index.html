@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>University Application Tracker</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero panel">
+        <p class="eyebrow">University application tracker</p>
+        <h1>Australian Masters Applications</h1>
+        <p class="hero-copy">
+          This page tracks the university courses I am considering, key
+          application deadlines, whether I have applied, and when each course
+          starts.
+        </p>
+        <p class="hero-note">
+          This site reads directly from <code>data/applications.csv</code>.
+        </p>
+      </header>
+
+      <main class="layout">
+        <section class="panel" aria-labelledby="overview-heading">
+          <div class="section-heading">
+            <div>
+              <p class="section-label">At a glance</p>
+              <h2 id="overview-heading">Overview</h2>
+            </div>
+            <p id="pageStatus" class="status-banner" role="status">
+              Loading applications from CSV...
+            </p>
+          </div>
+          <div id="overviewCards" class="overview-grid"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="attention-heading">
+          <div class="section-heading">
+            <div>
+              <p class="section-label">Plain reminders</p>
+              <h2 id="attention-heading">Needs attention</h2>
+            </div>
+            <p class="section-copy">
+              Items appear here when a deadline is near, a key field is missing,
+              or accreditation still needs confirmation.
+            </p>
+          </div>
+          <div id="needsAttention" class="attention-list"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="applications-heading">
+          <div class="section-heading">
+            <div>
+              <p class="section-label">Main list</p>
+              <h2 id="applications-heading">Applications table</h2>
+            </div>
+            <p class="section-copy">
+              Search and filter the table below. Deadlines stay sorted by date.
+            </p>
+          </div>
+
+          <div class="controls" aria-label="Application table filters">
+            <label class="control">
+              <span>Search</span>
+              <input
+                id="searchInput"
+                type="search"
+                placeholder="Search university or course"
+              />
+            </label>
+
+            <label class="control">
+              <span>Applied</span>
+              <select id="appliedFilter">
+                <option value="all">All</option>
+                <option value="applied">Applied</option>
+                <option value="not-applied">Not applied yet</option>
+              </select>
+            </label>
+
+            <label class="control">
+              <span>ACS accredited</span>
+              <select id="acsFilter">
+                <option value="all">All</option>
+                <option value="yes">Accredited</option>
+                <option value="no">Not accredited</option>
+                <option value="unknown">Unknown</option>
+              </select>
+            </label>
+
+            <label class="control">
+              <span>Deadline order</span>
+              <select id="sortOrder">
+                <option value="deadline-asc">Soonest first</option>
+                <option value="deadline-desc">Latest first</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="table-wrap">
+            <table class="applications-table">
+              <thead>
+                <tr>
+                  <th>University</th>
+                  <th>Course</th>
+                  <th>Intake / course start</th>
+                  <th>Application deadline</th>
+                  <th>Duration</th>
+                  <th>ACS accredited?</th>
+                  <th>Applied status</th>
+                  <th>Course outline link</th>
+                  <th>Notes</th>
+                  <th>Details</th>
+                </tr>
+              </thead>
+              <tbody id="applicationsTableBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="timeline-heading">
+          <div class="section-heading">
+            <div>
+              <p class="section-label">Dates view</p>
+              <h2 id="timeline-heading">Timeline</h2>
+            </div>
+            <p class="section-copy">
+              Each row shows the application deadline and course start date for
+              one course. Hover or focus a marker to see the full date.
+            </p>
+          </div>
+
+          <div class="legend" aria-label="Timeline legend">
+            <span class="legend-item">
+              <span class="legend-marker marker-deadline"></span>
+              Application deadline
+            </span>
+            <span class="legend-item">
+              <span class="legend-marker marker-start"></span>
+              Course start
+            </span>
+            <span class="legend-item">
+              <span class="legend-chip chip-applied">Applied</span>
+            </span>
+            <span class="legend-item">
+              <span class="legend-chip chip-not-applied">Not applied yet</span>
+            </span>
+            <span class="legend-item">
+              <span class="legend-line"></span>
+              Reference date
+            </span>
+          </div>
+
+          <div id="timeline" class="timeline"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
