@@ -41,7 +41,7 @@ If you use VS Code, you can run the site with the Live Server extension.
 The current CSV uses these headers:
 
 ```csv
-Uni,Program,Application Deadline,Course Start Date,Course Duration,ACS Accredited,CRICOS,Post Study Visa Duration,Semesters,Application Status,Course Outline Link,Notes
+Uni,Program,Preference,Application Deadline,Course Start Date,Course Duration,ACS Accredited,CRICOS,Post Study Visa Duration,Semesters,Application Status,Course Outline Link,Notes
 ```
 
 ## Export the Google Sheet as CSV
@@ -78,15 +78,7 @@ The app uses the first matching header for each field.
 
 ## Reference date for alerts
 
-The dashboard currently uses `4 May 2026` as its reference date for urgency, overview cards, and the timeline because that matches your current application planning context.
-
-If you want the site to use the real current date later, edit [app.js](/Users/advait/Code/uni-tracker/app.js) and change:
-
-```js
-const TODAY_OVERRIDE = "2026-05-04";
-```
-
-Set it to an empty string to use the browser's actual current date.
+The dashboard uses the browser's actual current date for urgency, overview cards, and the timeline.
 
 ## Add new CSV fields later
 

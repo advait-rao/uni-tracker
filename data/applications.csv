@@ -1,5 +1,5 @@
-Uni,Program,Application Deadline,Course Start Date,Course Duration,ACS Accredited,CRICOS,Post Study Visa Duration,Semesters,Application Status,Course Outline Link,Notes
-USyd,Master of Computer Science,15/05/2026,03/08/2026,2 years,Yes (currently being renewed),Yes,3 years,Yes,Not applied yet,https://www.sydney.edu.au/handbooks/engineering-pg/computer-science/computer-science/unit-of-study-table.html,"Check final ACS renewal note."
-UniMelb,Master of IT,31/05/2026,27/07/2026,2 years,Yes,Yes,3 years,Yes,Not applied yet,https://handbook.unimelb.edu.au/courses/mc-it/course-structure,
-UniMelb,Master of Software Engineering,31/05/2026,27/07/2026,2-3 years,Yes,Yes,3 years,Yes,Not applied yet,https://handbook.unimelb.edu.au/2026/courses/mc-softeng/course-structure,"Compare the structure with the Master of IT before applying."
-UNSW,Master of IT,27/08/2026,07/09/2026,2 years,Yes,Yes,3 years,No,Not applied yet,https://www.unsw.edu.au/study/postgraduate/master-of-information-technology,"Decide whether the September intake is still relevant."
+Uni,Program,Preference,Application Deadline,Course Start Date,Course Duration,ACS Accredited,CRICOS,Post Study Visa Duration,Semesters,Application Status,Course Outline Link,Notes
+USyd,Master of Computer Science,2,15/05/2026,03/08/2026,2 years,Yes (currently being renewed),Yes,3 years,Yes,Not applied yet,https://www.sydney.edu.au/handbooks/engineering-pg/computer-science/computer-science/unit-of-study-table.html,"Check final ACS renewal note."
+UniMelb,Master of IT,3,31/05/2026,27/07/2026,2 years,Yes,Yes,3 years,Yes,Not applied yet,https://handbook.unimelb.edu.au/courses/mc-it/course-structure,
+UniMelb,Master of Software Engineering,1,31/05/2026,27/07/2026,2-3 years,Yes,Yes,3 years,Yes,Not applied yet,https://handbook.unimelb.edu.au/2026/courses/mc-softeng/course-structure,"Compare the structure with the Master of IT before applying."
+UNSW,Master of IT,4,27/08/2026,07/09/2026,2 years,Yes,Yes,3 years,No,Not applied yet,https://www.unsw.edu.au/study/postgraduate/master-of-information-technology,"Decide whether the September intake is still relevant."

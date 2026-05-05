@@ -1,5 +1,4 @@
 const DATA_SOURCE = "data/applications.csv";
-const TODAY_OVERRIDE = "2026-05-04";
 const TIMELINE_EDGE_PADDING_PERCENT = 7;
 
 /*
@@ -18,6 +17,7 @@ const COLUMN_CANDIDATES = {
   ],
   duration: ["Course Duration", "Duration"],
   acsAccredited: ["ACS Accredited", "ACS accreditation status"],
+  preference: ["Preference", "Preference Rank", "Priority"],
   appliedStatus: [
     "Application Status",
     "Applied Status",
@@ -299,16 +299,20 @@ function buildApplication(row, index) {
   const courseStartRaw = getMappedValue(row, "courseStartDate");
   const appliedStatus = getMappedValue(row, "appliedStatus");
   const acsAccredited = getMappedValue(row, "acsAccredited");
+  const preferenceRaw = getMappedValue(row, "preference");
 
   const applicationDeadline = parseDateValue(applicationDeadlineRaw);
   const courseStartDate = parseDateValue(courseStartRaw);
   const isApplied = isAppliedStatus(appliedStatus);
   const acsStatus = classifyAcsStatus(acsAccredited);
+  const preferenceRank = parsePreferenceRank(preferenceRaw);
 
   return {
     id: `application-${index + 1}`,
     university: university || "TBC",
     course: course || "TBC",
+    preferenceRaw,
+    preferenceRank,
     duration: getMappedValue(row, "duration") || "TBC",
     acsLabel: acsAccredited || "Unknown",
     acsStatus,
@@ -431,6 +435,20 @@ function classifyAcsStatus(value) {
   }
 
   return "unknown";
+}
+
+function parsePreferenceRank(value) {
+  if (!value) {
+    return null;
+  }
+
+  const match = String(value).trim().match(/\d+/);
+  if (!match) {
+    return null;
+  }
+
+  const rank = Number(match[0]);
+  return Number.isFinite(rank) && rank > 0 ? rank : null;
 }
 
 function renderAll() {
@@ -601,7 +619,9 @@ function renderNeedsAttention() {
     .map(
       ({ application, reasons }) => `
         <article class="attention-card">
-          <h3>${escapeHtml(application.university)} - ${escapeHtml(application.course)}</h3>
+          <h3>${renderPreferenceBadge(application)} ${escapeHtml(application.university)} - ${escapeHtml(
+            application.course
+          )}</h3>
           <p>${escapeHtml(
             `Deadline: ${getDisplayDate(application.applicationDeadlineRaw, application.applicationDeadline)} - Applied: ${application.appliedLabel || "TBC"}`
           )}</p>
@@ -668,7 +688,12 @@ function renderTable() {
       return `
         <tr>
           <td>${escapeHtml(application.university)}</td>
-          <td>${escapeHtml(application.course)}</td>
+          <td>
+            <div class="course-cell">
+              <span class="course-name">${escapeHtml(application.course)}</span>
+              ${renderPreferenceBadge(application)}
+            </div>
+          </td>
           <td>${escapeHtml(getDisplayDate(application.courseStartRaw, application.courseStartDate))}</td>
           <td>
             <div class="deadline-cell">
@@ -707,18 +732,22 @@ function renderTable() {
 
 function renderDetailsMarkup(application, outlineLinkMarkup) {
   const detailItems = [
-    ["Full course name", application.course],
-    ["University", application.university],
-    ["Duration", application.duration],
-    ["ACS accreditation", application.acsLabel],
-    ["Application deadline", getDisplayDate(application.applicationDeadlineRaw, application.applicationDeadline)],
-    ["Course start date", getDisplayDate(application.courseStartRaw, application.courseStartDate)],
-    ["Application status", application.appliedLabel || "TBC"],
-    ["Notes", application.notes],
-    ["Official course outline link", outlineLinkMarkup],
-    ["CRICOS", application.cricos || "TBC"],
-    ["Post-study visa duration", application.postStudyVisaDuration || "TBC"],
-    ["Semesters", application.semesters || "TBC"]
+    { label: "Preference", value: getPreferenceText(application) },
+    { label: "Full course name", value: application.course },
+    { label: "University", value: application.university },
+    { label: "Duration", value: application.duration },
+    { label: "ACS accreditation", value: application.acsLabel },
+    {
+      label: "Application deadline",
+      value: getDisplayDate(application.applicationDeadlineRaw, application.applicationDeadline)
+    },
+    { label: "Course start date", value: getDisplayDate(application.courseStartRaw, application.courseStartDate) },
+    { label: "Application status", value: application.appliedLabel || "TBC" },
+    { label: "Notes", value: application.notes },
+    { label: "Official course outline link", value: outlineLinkMarkup, isHtml: true },
+    { label: "CRICOS", value: application.cricos || "TBC" },
+    { label: "Post-study visa duration", value: application.postStudyVisaDuration || "TBC" },
+    { label: "Semesters", value: application.semesters || "TBC" }
   ];
 
   return `
@@ -726,10 +755,10 @@ function renderDetailsMarkup(application, outlineLinkMarkup) {
       <dl class="details-grid">
         ${detailItems
           .map(
-            ([label, value]) => `
+            (item) => `
               <div class="details-item">
-                <dt>${escapeHtml(label)}</dt>
-                <dd>${label.includes("link") ? value : escapeHtml(value)}</dd>
+                <dt>${escapeHtml(item.label)}</dt>
+                <dd>${item.isHtml ? item.value : escapeHtml(item.value)}</dd>
               </div>
             `
           )
@@ -746,6 +775,63 @@ function renderStatusPill(application) {
 
   const className = application.isApplied ? "applied" : "not-applied";
   return `<span class="status-pill ${className}">${escapeHtml(application.appliedLabel)}</span>`;
+}
+
+function renderPreferenceBadge(application) {
+  if (!application.preferenceRank) {
+    return "";
+  }
+
+  let className = "preference-badge";
+
+  if (application.preferenceRank === 1) {
+    className += " top-choice";
+  }
+
+  if (application.preferenceRank === 4) {
+    className += " fourth-choice";
+  }
+
+  return `<span class="${className.trim()}" title="${escapeAttribute(
+    getPreferenceText(application)
+  )}" aria-label="${escapeAttribute(getPreferenceText(application))}">${escapeHtml(
+    getPreferenceShortLabel(application)
+  )}</span>`;
+}
+
+function getPreferenceText(application) {
+  if (!application.preferenceRank) {
+    return "TBC";
+  }
+
+  return `${formatOrdinal(application.preferenceRank)} choice`;
+}
+
+function getPreferenceShortLabel(application) {
+  if (!application.preferenceRank) {
+    return "TBC";
+  }
+
+  return `${formatOrdinal(application.preferenceRank)} choice`;
+}
+
+function formatOrdinal(number) {
+  const remainder10 = number % 10;
+  const remainder100 = number % 100;
+
+  if (remainder10 === 1 && remainder100 !== 11) {
+    return `${number}st`;
+  }
+
+  if (remainder10 === 2 && remainder100 !== 12) {
+    return `${number}nd`;
+  }
+
+  if (remainder10 === 3 && remainder100 !== 13) {
+    return `${number}rd`;
+  }
+
+  return `${number}th`;
 }
 
 function getDeadlineState(date) {
@@ -792,7 +878,7 @@ function getDeadlineState(date) {
 }
 
 function getStartOfToday() {
-  const today = TODAY_OVERRIDE ? parseDateValue(TODAY_OVERRIDE) || new Date() : new Date();
+  const today = new Date();
   today.setHours(0, 0, 0, 0);
   return today;
 }
@@ -965,6 +1051,7 @@ function renderTimelineRow(application, minimumDate, maximumDate, referenceDate)
       <div class="timeline-label">
         <strong>${escapeHtml(application.university)}</strong>
         <span class="timeline-course">${escapeHtml(application.course)}</span>
+        ${renderPreferenceBadge(application)}
         <div class="timeline-meta">
           <span class="timeline-chip">Deadline ${escapeHtml(
             getDisplayDate(application.applicationDeadlineRaw, application.applicationDeadline)
